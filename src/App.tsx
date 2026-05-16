@@ -242,6 +242,9 @@ export default function App() {
     setTopology(topo);
   }, []);
 
+  // Helper: yield to the browser so the UI can repaint before heavy work
+  const yieldToBrowser = () => new Promise<void>(r => setTimeout(r, 80));
+
   // Run simulation
   const handleRunSimulation = async () => {
     if (!topology) return;
@@ -262,59 +265,59 @@ export default function App() {
       
       // DIAGNOSTICS FIRST — validate simulation health
       setSimulationProgress('Running diagnostics (10+ checks per protocol)...');
-      await new Promise(r => setTimeout(r, 100));
-      
+      await yieldToBrowser();
       const diagResults = runFullDiagnostics(topology);
       setDiagnosticResults(diagResults);
+      await yieldToBrowser();
       
       // Convergence simulation
       setSimulationProgress('Running convergence tests (10 trials per protocol)...');
-      await new Promise(r => setTimeout(r, 100)); // Let UI update
-      
+      await yieldToBrowser();
       const convResults = runFullConvergenceSimulation(topology, 10);
       setConvergenceResults(convResults);
+      await yieldToBrowser();
       
       // Overhead simulation
       setSimulationProgress('Running overhead simulation (30 seconds)...');
-      await new Promise(r => setTimeout(r, 100));
-      
+      await yieldToBrowser();
       const overResults = runOverheadSimulation(topology, 30000);
       setOverheadResults(overResults);
+      await yieldToBrowser();
       
       // Path quality
       setSimulationProgress('Analyzing path quality (50 flows)...');
-      await new Promise(r => setTimeout(r, 100));
-      
+      await yieldToBrowser();
       const pathResults = analyzePathQuality(topology, 50);
       setPathQualityResults(pathResults);
+      await yieldToBrowser();
 
       // Congestion stress test
       setSimulationProgress('Running congestion stress test (5 load levels × 4 protocols)...');
-      await new Promise(r => setTimeout(r, 100));
-      
+      await yieldToBrowser();
       const congResults = runCongestionStressTest(topology);
       setCongestionResults(congResults);
+      await yieldToBrowser();
 
       // Multi-failure resilience
       setSimulationProgress('Running multi-failure resilience test (k=1..4 × 5 trials)...');
-      await new Promise(r => setTimeout(r, 100));
-      
+      await yieldToBrowser();
       const mfResults = runMultiFailureTest(topology);
       setMultiFailureResults(mfResults);
+      await yieldToBrowser();
 
       // Security analysis
       setSimulationProgress('Running security overhead analysis...');
-      await new Promise(r => setTimeout(r, 100));
-      
+      await yieldToBrowser();
       const secResults = runSecurityAnalysis(topology);
       setSecurityResults(secResults);
+      await yieldToBrowser();
       
       // Large-scale network test
       setSimulationProgress('Running large-scale tests (20, 50, 100 nodes)...');
-      await new Promise(r => setTimeout(r, 100));
-      
+      await yieldToBrowser();
       const scaleRes = runLargeScaleTest([20, 50, 100]);
       setScaleResults(scaleRes);
+      await yieldToBrowser();
       
       console.log('========================================');
       console.log('SIMULATION COMPLETE — SUMMARY');
