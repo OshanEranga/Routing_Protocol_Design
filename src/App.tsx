@@ -312,12 +312,17 @@ export default function App() {
       setSecurityResults(secResults);
       await yieldToBrowser();
       
-      // Large-scale network test
-      setSimulationProgress('Running large-scale tests (20, 50, 100 nodes)...');
-      await yieldToBrowser();
-      const scaleRes = runLargeScaleTest([20, 50, 100]);
-      setScaleResults(scaleRes);
-      await yieldToBrowser();
+      // Large-scale network test — run one size at a time to avoid freezing
+      const sizes = [20, 50, 100];
+      const scaleRes: ScaleTestResult[] = [];
+      for (const size of sizes) {
+        setSimulationProgress(`Running large-scale test (${size} nodes)...`);
+        await yieldToBrowser();
+        const result = runLargeScaleTest([size]);
+        scaleRes.push(...result);
+        setScaleResults([...scaleRes]);
+        await yieldToBrowser();
+      }
       
       console.log('========================================');
       console.log('SIMULATION COMPLETE — SUMMARY');
